@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -68,9 +70,27 @@ public class FullscreenActivity extends Activity {
     private Button buttonState;
 
     final String MEDIA_PATH = "/storage/sdcard1/anna";
-    private ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
+    //private ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
     private String mp3Pattern = ".mp3";
 
+    private int currentSongIndex = 0;
+
+    private List<File> songsList;
+
+    private List<File> getListFiles(File parentDir) {
+        ArrayList<File> inFiles = new ArrayList<File>();
+        File[] files = parentDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                inFiles.addAll(getListFiles(file));
+            } else {
+                if(file.getName().endsWith(".mp3") || file.getName().endsWith(".wav")){
+                    inFiles.add(file);
+                }
+            }
+        }
+        return inFiles;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +175,8 @@ public class FullscreenActivity extends Activity {
 
         buttonState = (Button) findViewById(R.id.buttonState);
 
+        mPlayer =   new MediaPlayer();
+
         ImageButton imageButtonCastizerLogo = (ImageButton) findViewById(R.id.imageButtonCastizerLogo);
         imageButtonCastizerLogo.setOnClickListener(new OnClickListener() {
 
@@ -162,14 +184,50 @@ public class FullscreenActivity extends Activity {
             public void onClick(View arg0) {
 
                 Toast.makeText(FullscreenActivity.this,
-                        "imageButtonCastizerLogo is clicked!", Toast.LENGTH_SHORT).show();
+                        "pausing...", Toast.LENGTH_SHORT).show();
+                buttonState.setText("");
+                mPlayer.pause();
 
             }
 
         });
 
-        mPlayer =   new MediaPlayer();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
 
+                boolean isRepeat = false;
+                boolean isShuffle = true;
+
+                if (!isPlaying()) return;
+
+                // check for repeat is ON or OFF
+                if(isRepeat){
+                    // repeat is on play same song again
+                    playSong(currentSongIndex);
+                } else if(isShuffle){
+                    // shuffle is on - play a random song
+                    Random rand = new Random();
+                    currentSongIndex = rand.nextInt((songsList.size() - 1) - 0 + 1) + 0;
+                    playSong(currentSongIndex);
+                } else{
+                    // no repeat or shuffle ON - play next song
+                    if(currentSongIndex < (songsList.size() - 1)){
+                        playSong(currentSongIndex + 1);
+                        currentSongIndex = currentSongIndex + 1;
+                    }else{
+                        // play first song
+                        playSong(0);
+                        currentSongIndex = 0;
+                    }
+                }
+
+            }
+        });
+
+    }
+
+    private boolean isPlaying(){
+        return (buttonState.getText().equals("PLAYING"));
     }
 
     @Override
@@ -228,49 +286,26 @@ public class FullscreenActivity extends Activity {
         return Environment.getExternalStorageDirectory().getPath() + "/";
     }
 
-    private ArrayList<String> listmp3 = new ArrayList<String>();
-    String[] extensions = { "mp3" };
-
-    private void loadmp3(String YourFolderPath) {
-
-        File file = new File(YourFolderPath);
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null && files.length > 0) {
-                for (File f : files) {
-                    if (f.isDirectory()) {
-                        loadmp3(f.getAbsolutePath());
-                    } else {
-                        for (int i = 0; i < extensions.length; i++) {
-                            if (f.getAbsolutePath().endsWith(extensions[i])) {
-                                listmp3.add(f.getAbsolutePath());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
     /**
      * Function to play a song
      * @param songIndex - index of song
      * */
     public void  playSong(int songIndex){
-        /*
+
         // Play song
         try {
             mPlayer.reset();
-            mPlayer.setDataSource(songsList.get(songIndex).get("songPath"));
+            String songToPlayPath = songsList.get(songIndex).getAbsolutePath();
+            Log.e("FILE TO PLAY:", songToPlayPath);
+            mPlayer.setDataSource(songToPlayPath);
             mPlayer.prepare();
             mPlayer.start();
             // Displaying Song title
-            String songTitle = songsList.get(songIndex).get("songTitle");
-            songTitleLabel.setText(songTitle);
+            //String songTitle = songsList.get(songIndex).get("songTitle");
+            //songTitleLabel.setText(songTitle);
 
             // Changing Button Image to pause image
-            btnPlay.setImageResource(R.drawable.btn_pause);
+            buttonState.setText("PLAYING");
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -279,61 +314,22 @@ public class FullscreenActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
+
     }
 
-    /**
-     * Function to read all mp3 files and store the details in
-     * ArrayList
-     * */
-    public ArrayList<HashMap<String, String>> getPlayList() {
-        System.out.println(MEDIA_PATH);
-        if (MEDIA_PATH != null) {
-            File home = new File(MEDIA_PATH);
-            File[] listFiles = home.listFiles();
-            if (listFiles != null && listFiles.length > 0) {
-                for (File file : listFiles) {
-                    System.out.println(file.getAbsolutePath());
-                    if (file.isDirectory()) {
-                        scanDirectory(file);
-                    } else {
-                        addSongToList(file);
-                    }
-                }
-            }
+    public void play() {
+
+        // check if next song is there or not
+        if(currentSongIndex < (songsList.size() - 1)){
+            playSong(currentSongIndex + 1);
+            currentSongIndex = currentSongIndex + 1;
+        }else{
+            // play first song
+            playSong(0);
+            currentSongIndex = 0;
         }
-        // return songs list array
-        return songsList;
+
     }
-
-    private void scanDirectory(File directory) {
-        if (directory != null) {
-            File[] listFiles = directory.listFiles();
-            if (listFiles != null && listFiles.length > 0) {
-                for (File file : listFiles) {
-                    if (file.isDirectory()) {
-                        scanDirectory(file);
-                    } else {
-                        addSongToList(file);
-                    }
-
-                }
-            }
-        }
-    }
-
-    private void addSongToList(File song) {
-        if (song.getName().endsWith(mp3Pattern)) {
-            HashMap<String, String> songMap = new HashMap<String, String>();
-            songMap.put("songTitle",
-                    song.getName().substring(0, (song.getName().length() - 4)));
-            songMap.put("songPath", song.getPath());
-
-            // Adding each song to SongList
-            songsList.add(songMap);
-        }
-    }
-
 
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
@@ -371,20 +367,20 @@ public class FullscreenActivity extends Activity {
                 case R.id.button_04:
 
                     Log.d("PABLO", "START");
-                    File dirAnna = new File("/storage/sdcard1/anna");
-                    String path2 = Environment.getExternalStorageDirectory().toString();
-                    Log.d("Files", "Path: " + path2);
-                    loadmp3(path2);
-/*
+                    File dirTest = new File("/storage/sdcard1/castizer/test");
+                    songsList = getListFiles(dirTest);
+
                     if (songsList != null)
-                        for (int i=0; i<songsList.length; ++i)
+                        for (int i=0; i<songsList.size(); ++i)
                         {
-                            Log.e("FILE:", path + "/" + songsList[i].getName());
+                            Log.e("FILE2:", songsList.get(i).getAbsolutePath());
                         }
+
+                    play();
 
                     // Listeners
                     //mPlayer.setOnCompletionListener(this); // Important
-*/
+
                     break;
 
 
