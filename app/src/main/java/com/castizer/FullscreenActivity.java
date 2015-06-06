@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -96,6 +98,10 @@ public class FullscreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_fullscreen);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
@@ -103,6 +109,7 @@ public class FullscreenActivity extends Activity {
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
+        /*
         mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
@@ -142,15 +149,15 @@ public class FullscreenActivity extends Activity {
                         }
                     }
                 });
-
+*/
         // Set up the user interaction to manually show or hide the system UI.
         contentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (TOGGLE_ON_CLICK) {
-                    mSystemUiHider.toggle();
+                    //mSystemUiHider.toggle();
                 } else {
-                    mSystemUiHider.show();
+                    //mSystemUiHider.show();
                 }
             }
 
@@ -260,7 +267,7 @@ public class FullscreenActivity extends Activity {
     Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
-            mSystemUiHider.hide();
+            //mSystemUiHider.hide();
         }
     };
 
