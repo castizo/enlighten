@@ -4,6 +4,11 @@ import com.castizer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -29,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import static android.view.KeyEvent.*;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -60,10 +67,15 @@ public class FullscreenActivity extends Activity {
      */
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
+//    private static final String TAG = MyActivity.class.getSimpleName();
+    private static final String TAG = "DDD";
+
+
     /**
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
+
 
     // Mediaplayer
     private MediaPlayer mPlayer;
@@ -231,7 +243,38 @@ public class FullscreenActivity extends Activity {
             }
         });
 
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        //AudioManager am = mContext.getSystemService(Context.AUDIO_SERVICE);
+        // Start listening for button presses
+        MediaButtonReceiver mbr;
+
+        ComponentName myEventReceiver = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
+        am.registerMediaButtonEventReceiver(myEventReceiver);
+        // Stop listening for button presses
+        //am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
+
+        registerReceiver(broadcastReceiver, new IntentFilter("BLUETOOTH_KEYPRESS"));
+
+        Log.d(TAG, "onCreate(): event registered!");
+
     }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String value = "ERROR";
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                if(extras.containsKey("key")){
+                    value=extras.get("key").toString();
+                }
+            }
+            Toast.makeText(context, "ONE_CLICK ! - " + value, Toast.LENGTH_LONG).show();
+            mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
+            mPlayer.start();
+        }
+    };
 
     private boolean isPlaying(){
         return (buttonState.getText().equals("PLAYING"));
@@ -341,112 +384,64 @@ public class FullscreenActivity extends Activity {
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(final View v) {
+
+            int listNumber = 1;
+            boolean playButton = true;
+
             switch(v.getId()){
-                case R.id.button_01:
+                /*
+                case R.id.button_00:
                     Toast.makeText(FullscreenActivity.this,
                             "Playing music !", Toast.LENGTH_SHORT).show();
                     MediaPlayer mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
-                    /*
-                    Uri myUri1 = Uri.parse("file:///sdcard/Songs/ARR Hits/hosannatamil.mp3");
-                    mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    try {
-                        mPlayer.setDataSource(getApplicationContext(), myUri1);
-                    } catch (IllegalArgumentException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (SecurityException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IllegalStateException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        mPlayer.prepare();
-                    } catch (IllegalStateException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    }
-                    */
                     mPlayer.start();
                     break;
-
+                */
+                case R.id.button_01:
+                    listNumber = 1;
+                    break;
+                case R.id.button_02:
+                    listNumber = 2;
+                    break;
+                case R.id.button_03:
+                    listNumber = 3;
+                    break;
                 case R.id.button_04:
-
-                    Log.d("PABLO", "START");
-                    File dirTest = new File("/storage/sdcard1/castizer/test");
-                    songsList = getListFiles(dirTest);
-
-                    if (songsList != null)
-                        for (int i=0; i<songsList.size(); ++i)
-                        {
-                            Log.e("FILE2:", songsList.get(i).getAbsolutePath());
-                        }
-
-                    play();
-
-                    // Listeners
-                    //mPlayer.setOnCompletionListener(this); // Important
-
+                    listNumber = 4;
                     break;
-
-
                 case R.id.button_05:
-                    if (isExternalStorageReadable())
-                        Toast.makeText(FullscreenActivity.this, "SD Readable !", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(FullscreenActivity.this, "SD NOT READABLE !", Toast.LENGTH_SHORT).show();
-
-                    //File dir = Environment.getExternalStorageDirectory();
-                    File dir = new File("/storage/sdcard1/anna");
-                    String path = Environment.getExternalStorageDirectory().toString();
-                    Log.d("Files", "Path: " + path);
-
-                    //File yourFile = new File(dir, "music/");
-                    File[] mp3List = dir.listFiles();
-                    if (mp3List != null)
-                        for (int i=0; i<mp3List.length; ++i)
-                        {
-                            Log.e("FILE:", path + "/" + mp3List[i].getName());
-                        }
-
+                    //listNumber = 5;
+                    Toast.makeText(FullscreenActivity.this,
+                            "Playing music !", Toast.LENGTH_SHORT).show();
                     mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
-/*
-                    FileInputStream fis = new FileInputStream(f);
-                    FileDescriptor fileD = fis.getFD();
-                    this.setDataSource(fileD);
-*/
-                    Uri myUri1 = Uri.parse("file:///storage/sdcard1/anna");
-                    mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    try {
-                        mPlayer.setDataSource(getApplicationContext(), myUri1);
-                    } catch (IllegalArgumentException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (SecurityException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IllegalStateException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        mPlayer.prepare();
-                    } catch (IllegalStateException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    }
                     mPlayer.start();
+                    playButton = false;
 
                     break;
                 case R.id.button_06:
+                    playButton = false;
                     System.exit(0);
                     break;
                 default:
                     Toast.makeText(FullscreenActivity.this,
                             "Button pressed !", Toast.LENGTH_SHORT).show();
+                    playButton = false;
                     break;
-            }
+                }
+
+                if (playButton) {
+                    //File dirTest = new File("/storage/sdcard1/" + listNumber); // MyAndroidTablet
+                    File dirTest = new File("/mnt/external_sd/" + listNumber);
+                    Log.d("PABLO_dirTest", dirTest.toString());
+
+                    songsList = getListFiles(dirTest);
+                    if (songsList != null)
+                        for (int i = 0; i < songsList.size(); ++i) {
+                            Log.e("FILE2:", songsList.get(i).getAbsolutePath());
+                        }
+                    play();
+                }
+
         }
     };
 
