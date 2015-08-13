@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Browser;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -280,6 +282,52 @@ public class FullscreenActivity extends Activity {
         return (buttonState.getText().equals("PLAYING"));
     }
 
+
+    /** Open another app.
+     * @param context current Context, like Activity, App, or Service
+     * @param packageName the full package name of the app to open
+     * @return true if likely successful, false if unsuccessful
+     */
+    public static boolean openApp(Context context, String packageName) {
+        PackageManager manager = context.getPackageManager();
+        try {
+            Intent i = manager.getLaunchIntentForPackage(packageName);
+            if (i == null) {
+                return false;
+                //throw new PackageManager.NameNotFoundException();
+            }
+            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(i);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean issueCommand(Context context) {
+        String packageName = "com.android.chrome";
+        String url = "http://localhost:8080/jsonrpc?request={\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}";
+        Log.e("PPP URL:", url);
+        PackageManager manager = context.getPackageManager();
+        try {
+            Intent mBrowserIntent = manager.getLaunchIntentForPackage(packageName);
+            if (mBrowserIntent == null) {
+                return false;
+                //throw new PackageManager.NameNotFoundException();
+            }
+            mBrowserIntent.setData(Uri.parse(url));
+            mBrowserIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            //mBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mBrowserIntent.setFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+            mBrowserIntent.putExtra(Browser.EXTRA_APPLICATION_ID, "com.android.chrome");
+            context.startActivity(mBrowserIntent);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -407,7 +455,11 @@ public class FullscreenActivity extends Activity {
                     listNumber = 3;
                     break;
                 case R.id.button_04:
-                    listNumber = 4;
+                    //openApp(getApplicationContext(), "com.android.chrome");
+                    issueCommand(getApplicationContext());
+                    Toast.makeText(FullscreenActivity.this,
+                            "Launching App !", Toast.LENGTH_SHORT).show();
+                    playButton = false;
                     break;
                 case R.id.button_05:
                     //listNumber = 5;
