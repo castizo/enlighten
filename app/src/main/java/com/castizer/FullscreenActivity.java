@@ -4,6 +4,7 @@ import com.castizer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -113,15 +114,6 @@ public class FullscreenActivity extends Activity {
             }
         }
         return inFiles;
-    }
-
-    private class myNoisyAudioStreamReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                // Pause the playback
-            }
-        }
     }
 
     @Override
@@ -273,6 +265,8 @@ public class FullscreenActivity extends Activity {
 
         registerReceiver(broadcastReceiver, new IntentFilter("BLUETOOTH_KEYPRESS"));
         registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
+        registerReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
 
         Log.d(TAG, "onCreate(): event registered!");
 
@@ -283,17 +277,36 @@ public class FullscreenActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                Log.e("PPP action:", "PGARCIA");
+            String action = intent.getAction();
+
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+                Log.e("PPP action:", "ACTION_AUDIO_BECOMING_NOISY");
                 // Pause the playback
+                issueCommand(getApplicationContext(), json_command_play_pause);
+            }
+
+            if (AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED.equals(action)) {
+                Log.e("PPP action:", "ACTION_SCO_AUDIO_STATE_UPDATED");
+                // Pause the playback
+                //issueCommand(getApplicationContext(), json_command_play_pause);
+            }
+
+            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                //Do something if connected
+                Toast.makeText(getApplicationContext(), "BT Connected !", Toast.LENGTH_SHORT).show();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 issueCommand(getApplicationContext(), json_command_play_pause);
             }
 
             String value = "ERROR";
             Bundle extras = intent.getExtras();
             if (extras != null) {
-                if(extras.containsKey("key")){
-                    value=extras.get("key").toString();
+                if (extras.containsKey("key")) {
+                    value = extras.get("key").toString();
                 }
             }
             Log.e("PPP value:", value);
