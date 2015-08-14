@@ -78,6 +78,9 @@ public class FullscreenActivity extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
+    private static final String json_command_play_pause = "http://localhost:8080/jsonrpc?request={\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}";
+    private static String json_command_castizer_control;
+    // = "RunScript("special://skin/scripts/castizer_control.py", "NULL")
 
     // Mediaplayer
     private MediaPlayer mPlayer;
@@ -90,6 +93,9 @@ public class FullscreenActivity extends Activity {
     private String mp3Pattern = ".mp3";
 
     private int currentSongIndex = 0;
+    private int playlist_number = 0;
+    private String playlist_path;
+    private static final String PATHTOPLAYLISTS = "/mnt/sdcard2/castizer/music/";
 
     private List<File> songsList;
 
@@ -272,9 +278,26 @@ public class FullscreenActivity extends Activity {
                     value=extras.get("key").toString();
                 }
             }
-            Toast.makeText(context, "ONE_CLICK ! - " + value, Toast.LENGTH_LONG).show();
+            Log.e("PPP value:", value);
+            if (value.equals("KEY_CASTIZER_CLICK")){
+                playlist_number += 1;
+                if (playlist_number > 3) {
+                    playlist_number = 1;
+                }
+                //PATHTOPLAYLISTS = xbmc.getInfoLabel( '$INFO[Skin.String(Setting.CastizerPlaylist)]' )
+                playlist_path = PATHTOPLAYLISTS + playlist_number + "/";
+                //PlayMedia(" + playlist_path + ")";
+                json_command_castizer_control = "http://192.168.0.10:8080/jsonrpc?request={\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"directory\" : \"" + playlist_path + "\" } } }";
+                Log.e("PPP command:", json_command_castizer_control);
+                Toast.makeText(context, "PPP playlist_path: " + playlist_path, Toast.LENGTH_LONG).show();
+                issueCommand(getApplicationContext(), json_command_castizer_control);
+            } else if (value.equals("KEY_CASTIZER_DOUBLE_CLICK")){
+                issueCommand(getApplicationContext(), json_command_play_pause);
+            }
+            //Toast.makeText(context, "ONE_CLICK ! - " + value, Toast.LENGTH_LONG).show();
             mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
             mPlayer.start();
+
         }
     };
 
@@ -305,9 +328,8 @@ public class FullscreenActivity extends Activity {
         }
     }
 
-    public static boolean issueCommand(Context context) {
+    public static boolean issueCommand(Context context, String url) {
         String packageName = "com.android.chrome";
-        String url = "http://localhost:8080/jsonrpc?request={\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}";
         Log.e("PPP URL:", url);
         PackageManager manager = context.getPackageManager();
         try {
@@ -456,7 +478,7 @@ public class FullscreenActivity extends Activity {
                     break;
                 case R.id.button_04:
                     //openApp(getApplicationContext(), "com.android.chrome");
-                    issueCommand(getApplicationContext());
+                    issueCommand(getApplicationContext(), json_command_play_pause);
                     Toast.makeText(FullscreenActivity.this,
                             "Launching App !", Toast.LENGTH_SHORT).show();
                     playButton = false;

@@ -24,12 +24,18 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                 if (event.getAction() == KeyEvent.ACTION_DOWN){
                     // Handle key press.
                     Intent myIntent = new Intent("BLUETOOTH_KEYPRESS");
-                    myIntent.putExtra("key","KEY_CASTIZER_ACTION");
+                    myIntent.putExtra("key","KEY_CASTIZER_CLICK");
                     context.sendBroadcast(myIntent);
                 }
             } else if (KeyEvent.KEYCODE_MEDIA_NEXT == event.getKeyCode()) {
                 // Handle key press.
-                Log.d(TAG, "onReceive - ACTION_MEDIA_BUTTON - KEYCODE_MEDIA_NEXT");
+                Log.d(TAG, "onReceive - ACTION_MEDIA_BUTTON - KEYCODE_MEDIA_NEXT - ACTION_UP = \" + event.getAction()");
+                if (event.getAction() == KeyEvent.ACTION_DOWN){
+                    // Handle key press.
+                    Intent myIntent = new Intent("BLUETOOTH_KEYPRESS");
+                    myIntent.putExtra("key","KEY_CASTIZER_DOUBLE_CLICK");
+                    context.sendBroadcast(myIntent);
+                }
             }
         }
     }
