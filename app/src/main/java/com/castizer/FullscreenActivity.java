@@ -96,6 +96,7 @@ public class FullscreenActivity extends Activity {
     private int playlist_number = 0;
     private String playlist_path;
     private static final String PATHTOPLAYLISTS = "/mnt/sdcard2/castizer/music/";
+    private IntentFilter intentFilter_noisy;
 
     private List<File> songsList;
 
@@ -112,6 +113,15 @@ public class FullscreenActivity extends Activity {
             }
         }
         return inFiles;
+    }
+
+    private class myNoisyAudioStreamReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                // Pause the playback
+            }
+        }
     }
 
     @Override
@@ -262,14 +272,22 @@ public class FullscreenActivity extends Activity {
         //am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
 
         registerReceiver(broadcastReceiver, new IntentFilter("BLUETOOTH_KEYPRESS"));
+        registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
         Log.d(TAG, "onCreate(): event registered!");
 
     }
 
+
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                Log.e("PPP action:", "PGARCIA");
+                // Pause the playback
+                issueCommand(getApplicationContext(), json_command_play_pause);
+            }
 
             String value = "ERROR";
             Bundle extras = intent.getExtras();
