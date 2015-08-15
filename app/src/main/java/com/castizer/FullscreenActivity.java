@@ -1,9 +1,16 @@
 package com.castizer;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.castizer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -19,6 +26,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Browser;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -31,12 +39,25 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static android.view.KeyEvent.*;
 
@@ -323,7 +344,8 @@ public class FullscreenActivity extends Activity {
                 Toast.makeText(context, "PPP playlist_path: " + playlist_path, Toast.LENGTH_LONG).show();
                 issueCommand(getApplicationContext(), json_command_castizer_control);
             } else if (value.equals("KEY_CASTIZER_DOUBLE_CLICK")){
-                issueCommand(getApplicationContext(), json_command_play_pause);
+                //issueCommand(getApplicationContext(), json_command_play_pause);
+                issueCommandBackground();
             }
             //Toast.makeText(context, "ONE_CLICK ! - " + value, Toast.LENGTH_LONG).show();
             mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
@@ -482,6 +504,30 @@ public class FullscreenActivity extends Activity {
 
     }
 
+    public void issueCommandBackground() {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+        // Request a string response from the provided URL.
+        String command_test = "http://localhost:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0},\"id\":1}";
+        Log.d("ppp - request: ", command_test);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, command_test,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        Log.d("ppp Response", response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("ppp - onErrorResponse", "That didn't work!");
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -503,9 +549,22 @@ public class FullscreenActivity extends Activity {
                     break;
                 case R.id.button_02:
                     listNumber = 2;
+
+                    String artistName = "Bunbury";
+                    String trackName = "Infinito";
+                    final Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setAction(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
+                    intent.setComponent(new ComponentName("com.spotify.mobile.android.ui", "com.spotify.mobile.android.ui.activity.MainActivity"));
+                    intent.putExtra(SearchManager.QUERY, artistName + " " + trackName);
+                    getApplicationContext().startActivity(intent);
+
+                    playButton = false;
                     break;
                 case R.id.button_03:
                     listNumber = 3;
+                    issueCommandBackground();
+                    playButton = false;
                     break;
                 case R.id.button_04:
                     //openApp(getApplicationContext(), "com.android.chrome");
