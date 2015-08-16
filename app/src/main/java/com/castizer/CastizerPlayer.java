@@ -21,13 +21,19 @@ import java.util.List;
  */
 public class CastizerPlayer {
 
-    private static final String TAG = "CastizerPlayer";
-    private static String PROCESS_KODI = "org.xbmc.kodi";
+    private static final boolean DEBUGGING = false;
 
-    private static final String json_command_play_pause = "http://localhost:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0},\"id\":1}";
-    private static final String json_command_stop = "http://localhost:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Stop\",\"params\":{\"playerid\":0},\"id\":1}";
-    private static final String json_command_play = "http://localhost:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":true},\"id\":1}";
-    private static final String json_command_pause = "http://localhost:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":false},\"id\":1}";
+    private static final String TAG = "CastizerPlayer";
+    private static final String KODI_PROCESS = "org.xbmc.kodi";
+
+    private static final String KODI_HOST = "localhost";
+    private static final String KODI_PORT = "8080";
+
+    private static final String json_command_play_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0},\"id\":1}";
+    private static final String json_command_stop = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Stop\",\"params\":{\"playerid\":0},\"id\":1}";
+    private static final String json_command_play = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":true},\"id\":1}";
+    private static final String json_command_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":false},\"id\":1}";
+
     private static String json_command_castizer_control;
 
     private static final String PATHTOPLAYLISTS = "/mnt/sdcard2/castizer/music/";
@@ -115,11 +121,11 @@ public class CastizerPlayer {
 
     private void launchKodi(){
         Log.e(TAG, "launchKodi()");
-        openApp(PROCESS_KODI);
+        openApp(KODI_PROCESS);
     }
 
     private void checkKodiRunning() {
-        if (isProcessRunning(PROCESS_KODI)) {
+        if (isProcessRunning(KODI_PROCESS)) {
             Log.d(TAG, "checkKodiRunning() - Kodi is running !");
         } else {
             Log.w(TAG, "checkKodiRunning() - Kodi NOT running !");
@@ -159,7 +165,13 @@ public class CastizerPlayer {
         if (playlist_number > 3) {
             playlist_number = 1;
         }
-        playlist_path = PATHTOPLAYLISTS + playlist_number + "/";
+        if (DEBUGGING){
+            playlist_path = PATHTOPLAYLISTS + "d" + playlist_number + "/";
+        }else{
+            playlist_path = PATHTOPLAYLISTS + playlist_number + "/";
+        }
+
+
         json_command_castizer_control = "http://192.168.0.10:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"directory\":\"" + playlist_path + "\"}}}";
         Log.d(TAG, "command: " + json_command_castizer_control);
         Log.d(TAG, "playlist_path: " + playlist_path);
