@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">castizer</string>
 
-    <string name="button_01">Button 01</string>
-    <string name="button_02">Button 02</string>
-    <string name="button_03">Button 03</string>
-    <string name="button_04">Launch App</string>
+    <string name="button_01">Playlist</string>
+    <string name="button_02">PlayPause</string>
+    <string name="button_03">Launch Kodi</string>
+    <string name="button_04">Testing...</string>
     <string name="button_05">Poing!</string>
     <string name="button_06">Exit</string>
     <string name="backgroundText">CASTIZER</string>
