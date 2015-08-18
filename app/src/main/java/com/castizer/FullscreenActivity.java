@@ -61,6 +61,7 @@ public class FullscreenActivity extends Activity {
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
     private static final String TAG = "com.castizer";
+    private boolean isReceiverRegistered = false;
 
     /**
      * The instance of the {@link SystemUiHider} for this activity.
@@ -120,8 +121,8 @@ public class FullscreenActivity extends Activity {
         Button button06 = (Button) findViewById(R.id.button_06);
         button06.setOnClickListener(onClickListener);
 
+        /*
         buttonState = (Button) findViewById(R.id.buttonState);
-
         ImageButton imageButtonCastizerLogo = (ImageButton) findViewById(R.id.imageButtonCastizerLogo);
         imageButtonCastizerLogo.setOnClickListener(new OnClickListener() {
 
@@ -136,6 +137,7 @@ public class FullscreenActivity extends Activity {
             }
 
         });
+        */
 
         castizerPlayer = new CastizerPlayer(getApplicationContext());
 
@@ -147,14 +149,42 @@ public class FullscreenActivity extends Activity {
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                     // Resume playback
                     Log.i(TAG, "OnAudioFocusChangeListener - AUDIOFOCUS_GAIN");
+                    if (!isReceiverRegistered) {
+
+                        Log.d(TAG, "registerReceiver");
+                        //registerReceiver(myReceiver, new IntentFilter(...));
+                        registerReceiver(broadcastReceiver, new IntentFilter("BLUETOOTH_KEYPRESS"));
+                        registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+                        registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
+                        registerReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
+
+                        isReceiverRegistered = true;
+
+                    }
                 } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                     // Stop playback
                     Log.i(TAG, "OnAudioFocusChangeListener - AUDIOFOCUS_LOSS");
+                    Log.d(TAG, "unregisterReceiver");
+                    try {
+                        unregisterReceiver(broadcastReceiver);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                    isReceiverRegistered = false;
                 }
             }
         };
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        Log.d(TAG, "onResume(): Requesting audio focus... ");
         int result = audioManager.requestAudioFocus(mOnAudioFocusChangeListener,
                 // Hint: the music stream.
                 AudioManager.STREAM_MUSIC,
@@ -165,15 +195,9 @@ public class FullscreenActivity extends Activity {
         }
         else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
             Log.e(TAG, "requestAudioFocus - AUDIOFOCUS_REQUEST_FAILED !!!");
+        } else {
+            Log.d(TAG, "onResume(): OTHER ");
         }
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume()");
 
         //TODO: Use MediaSession instead... but only from Lollipop !
         //http://developer.android.com/reference/android/media/session/MediaSession.html#setMediaButtonReceiver%28android.app.PendingIntent%29
@@ -183,20 +207,45 @@ public class FullscreenActivity extends Activity {
         // Stop listening for button presses
         //am.unregisterMediaButtonEventReceiver(RemoteControlReceiver);
 
+        if (!isReceiverRegistered) {
 
-        //registerReceiver(myReceiver, new IntentFilter(...));
-        registerReceiver(broadcastReceiver, new IntentFilter("BLUETOOTH_KEYPRESS"));
-        registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-        registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
-        registerReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
+            //registerReceiver(myReceiver, new IntentFilter(...));
+            registerReceiver(broadcastReceiver, new IntentFilter("BLUETOOTH_KEYPRESS"));
+            registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+            registerReceiver(broadcastReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
+            registerReceiver(broadcastReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
 
-        Log.d(TAG, "onCreate(): event registered!");
+            Log.d(TAG, "onResume(): events registered!");
 
+            isReceiverRegistered = true;
+
+        }
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause()");
+        /*
+        if (isReceiverRegistered) {
+            Log.d(TAG, "onPause() - unregisterReceiver");
+            try {
+                //unregisterReceiver(broadcastReceiver);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            isReceiverRegistered = false;
+        }
+        */
     }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
+            Log.d(TAG, "onReceive()");
 
             String action = intent.getAction();
 
@@ -206,7 +255,7 @@ public class FullscreenActivity extends Activity {
             }
 
             if (AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED.equals(action)) {
-                Log.i(TAG, "IMPORTANT !!! " + "ACTION_SCO_AUDIO_STATE_UPDATED");
+                Log.i(TAG, "ACTION_SCO_AUDIO_STATE_UPDATED");
                 // Pause the playback ???
             }
 
@@ -228,7 +277,6 @@ public class FullscreenActivity extends Activity {
             if (extras != null) {
                 if (extras.containsKey("key")) {
                     value = extras.get("key").toString();
-                    Log.d(TAG, "value: " + value);
                     if (value.equals("KEY_CASTIZER_CLICK")){
                         Log.d(TAG, "Event received : KEY_CASTIZER_CLICK");
                         int pl = castizerPlayer.nextPlaylist();
@@ -237,12 +285,13 @@ public class FullscreenActivity extends Activity {
                         Log.d(TAG, "Event received : KEY_CASTIZER_DOUBLE_CLICK");
                         castizerPlayer.playPause();
                         Toast.makeText(context, "playPause", Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d(TAG, "Event received : other value: " + value);
                     }
+                    mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
+                    mPlayer.start();
                 }
             }
-
-            mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
-            mPlayer.start();
 
         }
     };
