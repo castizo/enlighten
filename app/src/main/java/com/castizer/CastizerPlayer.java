@@ -13,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.castizer.util.CastizerConfig;
 
 import java.util.List;
 
@@ -35,8 +36,6 @@ public class CastizerPlayer {
     private static final String json_command_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":false},\"id\":1}";
 
     private static String json_command_castizer_control;
-
-    private static final String PATHTOPLAYLISTS = "/mnt/sdcard2/castizer/music/";
 
     private int playlist_number = 0;
 
@@ -166,9 +165,9 @@ public class CastizerPlayer {
             playlist_number = 1;
         }
         if (DEBUGGING){
-            playlist_path = PATHTOPLAYLISTS + "d" + playlist_number + "/";
+            playlist_path = CastizerConfig.PATHTOPLAYLISTS + "d" + playlist_number + "/";
         }else{
-            playlist_path = PATHTOPLAYLISTS + playlist_number + "/";
+            playlist_path = CastizerConfig.PATHTOPLAYLISTS + playlist_number + "/";
         }
 
 

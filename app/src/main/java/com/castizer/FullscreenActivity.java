@@ -1,6 +1,7 @@
 package com.castizer;
 
 import com.castizer.util.SystemUiHider;
+import com.castizer.Configuration;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
@@ -374,6 +376,15 @@ public class FullscreenActivity extends Activity {
                     break;
                 case R.id.button_04:
 
+                    //Intent intent = new Intent(Configuration.class);
+                    Intent intent = new Intent(getApplicationContext(), Configuration.class);
+
+                    //EditText editText = (EditText) findViewById(R.id.edit_message);
+                    //String message = editText.getText().toString();
+                    //intent.putExtra(EXTRA_MESSAGE, message);
+                    startActivity(intent);
+
+
                     /*
                     // right click on a track in Spotify to get the URI, or use the Web API.
                     String spotify_uri = "spotify:artist:5lsC3H1vh9YSRQckyGv0Up";
@@ -382,7 +393,7 @@ public class FullscreenActivity extends Activity {
                     startActivity(launcher);
                     */
 
-
+/*
                     final Intent intent1 = new Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
                     intent1.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.MainActivity"));
                     intent1.putExtra(MediaStore.EXTRA_MEDIA_FOCUS, "vnd.android.cursor.item/*");
@@ -394,7 +405,9 @@ public class FullscreenActivity extends Activity {
                     if (intent1.resolveActivity(getPackageManager()) != null) {
                         startActivity(intent1);
                     }
-                                        /*
+  */
+
+                    /*
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.setAction(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
                     intent.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.MainActivity"));

@@ -8,4 +8,8 @@
     <string name="button_05">Poing!</string>
     <string name="button_06">Exit</string>
     <string name="backgroundText">CASTIZER</string>
+    <string name="title_activity_configuration">Configuration</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>
