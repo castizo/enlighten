@@ -30,10 +30,14 @@ public class CastizerPlayer {
     private static final String KODI_HOST = "localhost";
     private static final String KODI_PORT = "8080";
 
+    private static final String json_command_shuffle = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.SetShuffle\",\"params\":{\"playerid\":0,\"shuffle\":true},\"id\":1}";
+
     private static final String json_command_play_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0},\"id\":1}";
     private static final String json_command_stop = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Stop\",\"params\":{\"playerid\":0},\"id\":1}";
     private static final String json_command_play = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":true},\"id\":1}";
     private static final String json_command_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":false},\"id\":1}";
+
+    private static final int C_NUM_PLAYLISTS = 6;
 
     private static String json_command_castizer_control;
 
@@ -161,7 +165,7 @@ public class CastizerPlayer {
         Log.d(TAG, "nextPlaylist()");
         String playlist_path;
         playlist_number += 1;
-        if (playlist_number > 3) {
+        if (playlist_number > C_NUM_PLAYLISTS) {
             playlist_number = 1;
         }
         if (DEBUGGING){
@@ -171,7 +175,7 @@ public class CastizerPlayer {
         }
 
 
-        json_command_castizer_control = "http://192.168.0.10:8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"directory\":\"" + playlist_path + "\"}}}";
+        json_command_castizer_control = "http://" + CastizerConfig.HOST + ":8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"directory\":\"" + playlist_path + "\"}}}";
         Log.d(TAG, "command: " + json_command_castizer_control);
         Log.d(TAG, "playlist_path: " + playlist_path);
         kodiCommand(json_command_castizer_control);
@@ -190,6 +194,9 @@ public class CastizerPlayer {
 
     public void switchOn() {
         Log.d(TAG, "switchOn()");
+        Log.d(TAG, "switchOn() - Set Shuffle ON");
+        //Log.d(TAG, "command: " + json_command_shuffle);
+        kodiCommand(json_command_shuffle);
         if (playlist_number == 0){
             nextPlaylist();
         } else {

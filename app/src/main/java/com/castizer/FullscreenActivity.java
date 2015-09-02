@@ -283,6 +283,7 @@ public class FullscreenActivity extends Activity {
                         Log.d(TAG, "Event received : KEY_CASTIZER_CLICK");
                         int pl = castizerPlayer.nextPlaylist();
                         Toast.makeText(context, "playlist: " + pl, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(context, "playlist: DEBUGGING !" , Toast.LENGTH_LONG).show();
                     } else if (value.equals("KEY_CASTIZER_DOUBLE_CLICK")){
                         Log.d(TAG, "Event received : KEY_CASTIZER_DOUBLE_CLICK");
                         castizerPlayer.playPause();
