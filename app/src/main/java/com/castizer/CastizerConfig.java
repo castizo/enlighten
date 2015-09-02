@@ -5,6 +5,8 @@ package com.castizer.util;
  */
 public class CastizerConfig {
 
+    public static final Boolean CASTIZER_DEBUG = false;
+
     //public static final String HOST = "192.168.1.12";
     public static final String HOST = "localhost";
 

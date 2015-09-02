@@ -175,6 +175,8 @@ public class CastizerPlayer {
         }
 
 
+        Log.d(TAG, "command: " + json_command_shuffle);
+        kodiCommand(json_command_shuffle);
         json_command_castizer_control = "http://" + CastizerConfig.HOST + ":8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"directory\":\"" + playlist_path + "\"}}}";
         Log.d(TAG, "command: " + json_command_castizer_control);
         Log.d(TAG, "playlist_path: " + playlist_path);

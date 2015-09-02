@@ -1,5 +1,6 @@
 package com.castizer;
 
+import com.castizer.util.CastizerConfig;
 import com.castizer.util.SystemUiHider;
 import com.castizer.Configuration;
 
@@ -122,6 +123,15 @@ public class FullscreenActivity extends Activity {
         button05.setOnClickListener(onClickListener);
         Button button06 = (Button) findViewById(R.id.button_06);
         button06.setOnClickListener(onClickListener);
+
+        if (!CastizerConfig.CASTIZER_DEBUG) {
+            button01.setVisibility(View.INVISIBLE);
+            button02.setVisibility(View.INVISIBLE);
+            button03.setVisibility(View.INVISIBLE);
+            button04.setVisibility(View.INVISIBLE);
+            button05.setVisibility(View.INVISIBLE);
+            button06.setVisibility(View.INVISIBLE);
+        }
 
         /*
         buttonState = (Button) findViewById(R.id.buttonState);
