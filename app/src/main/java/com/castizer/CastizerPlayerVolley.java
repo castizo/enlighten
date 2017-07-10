@@ -1,12 +1,17 @@
 package com.castizer;
-
+/*
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.castizer.util.CastizerConfig;
 
 import java.util.List;
@@ -14,7 +19,8 @@ import java.util.List;
 /**
  * Created by pgarcia on 16/08/15.
  */
-public class CastizerPlayer {
+/*
+public class CastizerPlayerVolley {
 
     private static final boolean DEBUGGING = false;
 
@@ -24,14 +30,14 @@ public class CastizerPlayer {
     private static final String KODI_HOST = "localhost";
     private static final String KODI_PORT = "8080";
 
-    private static final String command_shuffle = "Player.SetShuffle";
+    private static final String json_command_shuffle = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.SetShuffle\",\"params\":{\"playerid\":0,\"shuffle\":true},\"id\":1}";
 
     private static final String json_command_play_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0},\"id\":1}";
     private static final String json_command_stop = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Stop\",\"params\":{\"playerid\":0},\"id\":1}";
     private static final String json_command_play = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":true},\"id\":1}";
     private static final String json_command_pause = "http://" + KODI_HOST + ":" + KODI_PORT + "/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.PlayPause\",\"params\":{\"playerid\":0,\"play\":false},\"id\":1}";
 
-    private static final int C_NUM_PLAYLISTS = 5;
+    private static final int C_NUM_PLAYLISTS = 6;
 
     private static String json_command_castizer_control;
 
@@ -47,13 +53,13 @@ public class CastizerPlayer {
 
 
 
+/*
 
-
-    public CastizerPlayer (Context context)
+    public CastizerPlayerVolley(Context context)
     {
         mContext =context;
         playlist_number = 0;
-        //checkKodiRunning();
+        checkKodiRunning();
     }
 
 
@@ -62,8 +68,10 @@ public class CastizerPlayer {
      * @param packageName the full package name of the app to open
      * @return true if likely successful, false if unsuccessful
      */
+  /*
     private static boolean openApp(String packageName) {
-        PackageManager manager = mContext.getPackageManager();
+     */
+    /*    PackageManager manager = mContext.getPackageManager();
         try {
             Intent i = manager.getLaunchIntentForPackage(packageName);
             if (i == null) {
@@ -93,8 +101,8 @@ public class CastizerPlayer {
 
     private void kodiCommand(String command) {
         // Instantiate the RequestQueue.
-        //RequestQueue queue = Volley.newRequestQueue(mContext);
-/*
+        RequestQueue queue = Volley.newRequestQueue(mContext);
+
         // Request a string response from the provided URL.
         Log.d(TAG, "JSON Request: " + command);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, command,
@@ -112,19 +120,16 @@ public class CastizerPlayer {
                 checkKodiRunning();
             }
         });
-
-  * // Add the request to the RequestQueue.
+        // Add the request to the RequestQueue.
         queue.add(stringRequest);
-  */
     }
 
     private void launchKodi(){
         Log.e(TAG, "launchKodi()");
-        //openApp(KODI_PROCESS);
+        openApp(KODI_PROCESS);
     }
 
     private void checkKodiRunning() {
-/*
         if (isProcessRunning(KODI_PROCESS)) {
             Log.d(TAG, "checkKodiRunning() - Kodi is running !");
         } else {
@@ -132,7 +137,6 @@ public class CastizerPlayer {
             playlist_number = 0;
             launchKodi();
         }
-*/
     }
 
     private void stop() {
@@ -160,8 +164,6 @@ public class CastizerPlayer {
     }
 
     public int nextPlaylist() {
-
-
         Log.d(TAG, "nextPlaylist()");
         String playlist_path;
         playlist_number += 1;
@@ -175,13 +177,12 @@ public class CastizerPlayer {
         }
 
 
-        //Log.d(TAG, "command: " + json_command_shuffle);
-        //kodiCommand(json_command_shuffle);
+        Log.d(TAG, "command: " + json_command_shuffle);
+        kodiCommand(json_command_shuffle);
         json_command_castizer_control = "http://" + CastizerConfig.HOST + ":8080/jsonrpc?request={\"jsonrpc\":\"2.0\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"directory\":\"" + playlist_path + "\"}}}";
         Log.d(TAG, "command: " + json_command_castizer_control);
         Log.d(TAG, "playlist_path: " + playlist_path);
-        //kodiCommand(json_command_castizer_control);
-
+        kodiCommand(json_command_castizer_control);
         return playlist_number;
     }
 
@@ -196,7 +197,6 @@ public class CastizerPlayer {
     }
 
     public void switchOn() {
-         /*
         Log.d(TAG, "switchOn()");
         Log.d(TAG, "switchOn() - Set Shuffle ON");
         //Log.d(TAG, "command: " + json_command_shuffle);
@@ -206,7 +206,7 @@ public class CastizerPlayer {
         } else {
             play();
         }
-        */
     }
 
 }
+*/

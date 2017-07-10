@@ -28,95 +28,80 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button android:id="@+id/button_01"
-            android:layout_width="140dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:text="@string/button_01" />
-
-        <Button
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_02"
-            android:id="@+id/button_02"
-            android:layout_weight="1" />
-
-        <Button
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_03"
-            android:id="@+id/button_03"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
 
-        <ImageButton
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:id="@+id/imageButtonCastizerLogo"
-            android:layout_gravity="center_horizontal"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/castizer_logo_icon"
-            android:background="@null"
-            android:clickable="true"
-            android:layout_marginTop="20dp" />
-
-        <ImageButton
-            android:layout_width="fill_parent"
-            android:layout_height="120dp"
-            android:id="@+id/imageButtonCastizerText"
-            android:layout_gravity="center_horizontal"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/castizer_logo_text"
-            android:background="@null"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp" />
-
         <Button
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:id="@+id/buttonState"
-            android:layout_gravity="center_horizontal"
-            android:background="@null" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="right"
-        android:baselineAligned="false">
-
-        <Button
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_04"
-            android:id="@+id/button_04"
-            android:layout_weight="1" />
-
-        <Button
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_05"
             android:id="@+id/button_05"
-            android:layout_weight="1" />
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:text="@string/button_05" />
 
-        <Button
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_06"
-            android:id="@+id/button_06"
-            android:layout_weight="1" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/imageButtonCastizerLogo"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:clickable="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/castizer_logo_icon" />
+
+            <ImageButton
+                android:id="@+id/imageButtonCastizerText"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/castizer_logo_text" />
+
+            <Button
+                android:id="@+id/buttonState"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:background="@null" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_04"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_04" />
+
+            <Button
+                android:id="@+id/button_06"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/button_06" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

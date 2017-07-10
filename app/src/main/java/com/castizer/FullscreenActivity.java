@@ -63,7 +63,7 @@ public class FullscreenActivity extends Activity {
      */
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
-    private static final String TAG = "com.castizer";
+    private static final String TAG = "PPP com.castizer";
     private boolean isReceiverRegistered = false;
 
     /**
@@ -75,11 +75,14 @@ public class FullscreenActivity extends Activity {
     // Mediaplayer
     private MediaPlayer mPlayer;
     private CastizerPlayer castizerPlayer;
+    //SongsManager songManager;
 
     private IntentFilter intentFilter_noisy;
 
     private AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener;
     private AudioManager audioManager;
+
+    private int color_index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,8 @@ public class FullscreenActivity extends Activity {
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+
+        color_index = 0;
 
         // Set up the user interaction to manually show or hide the system UI.
         contentView.setOnClickListener(new View.OnClickListener() {
@@ -111,12 +116,12 @@ public class FullscreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.button_01).setOnTouchListener(mDelayHideTouchListener);
-        Button button01 = (Button) findViewById(R.id.button_01);
-        button01.setOnClickListener(onClickListener);
-        Button button02 = (Button) findViewById(R.id.button_02);
-        button02.setOnClickListener(onClickListener);
-        Button button03 = (Button) findViewById(R.id.button_03);
-        button03.setOnClickListener(onClickListener);
+//        Button button01 = (Button) findViewById(R.id.button_01);
+//        button01.setOnClickListener(onClickListener);
+//        Button button02 = (Button) findViewById(R.id.button_02);
+//        button02.setOnClickListener(onClickListener);
+//        Button button03 = (Button) findViewById(R.id.button_03);
+//        button03.setOnClickListener(onClickListener);
         Button button04 = (Button) findViewById(R.id.button_04);
         button04.setOnClickListener(onClickListener);
         Button button05 = (Button) findViewById(R.id.button_05);
@@ -125,9 +130,9 @@ public class FullscreenActivity extends Activity {
         button06.setOnClickListener(onClickListener);
 
         if (!CastizerConfig.CASTIZER_DEBUG) {
-            button01.setVisibility(View.INVISIBLE);
-            button02.setVisibility(View.INVISIBLE);
-            button03.setVisibility(View.INVISIBLE);
+            //button01.setVisibility(View.INVISIBLE);
+            //button02.setVisibility(View.INVISIBLE);
+            //button03.setVisibility(View.INVISIBLE);
             button04.setVisibility(View.INVISIBLE);
             button05.setVisibility(View.INVISIBLE);
             button06.setVisibility(View.INVISIBLE);
@@ -365,12 +370,13 @@ public class FullscreenActivity extends Activity {
                     mPlayer.start();
                     break;
                 */
-                case R.id.button_01:
-                    castizerPlayer.nextPlaylist();
-                    break;
-                case R.id.button_02:
-                    castizerPlayer.playPause();
-                    break;
+                //case R.id.button_01:
+                  //  castizerPlayer.nextPlaylist();
+                    //break;
+                //case R.id.button_02:
+                  //  castizerPlayer.playPause();
+                    //break;
+                /*
                 case R.id.button_03:
                     //castizerPlayer.testCheckKodiRunning();
 
@@ -385,62 +391,25 @@ public class FullscreenActivity extends Activity {
                     sendOrderedBroadcast(i, null);
 
                     break;
+ */
                 case R.id.button_04:
 
-                    //Intent intent = new Intent(Configuration.class);
-                    Intent intent = new Intent(getApplicationContext(), Configuration.class);
-
-                    //EditText editText = (EditText) findViewById(R.id.edit_message);
-                    //String message = editText.getText().toString();
-                    //intent.putExtra(EXTRA_MESSAGE, message);
-                    startActivity(intent);
-
-
-                    /*
-                    // right click on a track in Spotify to get the URI, or use the Web API.
-                    String spotify_uri = "spotify:artist:5lsC3H1vh9YSRQckyGv0Up";
-                    //String uri = "spotify:track:<spotify uri>";
-                    Intent launcher = new Intent( Intent.ACTION_VIEW, Uri.parse(spotify_uri) );
-                    startActivity(launcher);
-                    */
-
-/*
-                    final Intent intent1 = new Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
-                    intent1.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.MainActivity"));
-                    intent1.putExtra(MediaStore.EXTRA_MEDIA_FOCUS, "vnd.android.cursor.item/*");
-                    //intent1.putExtra(SearchManager.QUERY, "michael jackson smooth criminal");
-                    //intent1.putExtra(SearchManager.QUERY, "celine dion all the way");
-                    //intent1.putExtra(SearchManager.QUERY, "heroes del silencio tumbas de sal");
-                    intent1.putExtra(SearchManager.QUERY, "vicente fernandez");
-                    intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    if (intent1.resolveActivity(getPackageManager()) != null) {
-                        startActivity(intent1);
-                    }
-  */
-
-                    /*
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setAction(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH);
-                    intent.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.MainActivity"));
-                    intent.putExtra(SearchManager.QUERY, "michael jackson smooth criminal");
-
-                    try {
-                        startActivity(intent);
-                    }catch (ActivityNotFoundException e) {
-                        Toast.makeText(getApplicationContext(), "You must first install Spotify", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.spotify.mobile.android.ui"));
-                        startActivity(i);
-                    }
-                     */
-
-                    //castizerPlayer.switchOff();
-                    break;
-                case R.id.button_05:
-                    castizerPlayer.switchOn();
                     Toast.makeText(FullscreenActivity.this,
-                            "Playing music !", Toast.LENGTH_SHORT).show();
+                            "Button !", Toast.LENGTH_SHORT).show();
+                    mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sound_1);
+                    mPlayer.start();
+
+                    break;
+
+                case R.id.button_05:
+
+                    int pl = castizerPlayer.nextPlaylist();
+                    Toast.makeText(FullscreenActivity.this, "playlist: " + pl, Toast.LENGTH_LONG).show();
                     mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
                     mPlayer.start();
+
+                    Button buttonMain = (Button) findViewById(R.id.button_05);
+                    buttonMain.setBackgroundColor(CastizerConfig.color[pl]);
 
                     break;
                 case R.id.button_06:
