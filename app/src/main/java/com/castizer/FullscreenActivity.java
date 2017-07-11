@@ -33,6 +33,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
 
+import java.io.File;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -128,6 +130,8 @@ public class FullscreenActivity extends Activity {
         button05.setOnClickListener(onClickListener);
         Button button06 = (Button) findViewById(R.id.button_06);
         button06.setOnClickListener(onClickListener);
+        Button button_TEST1 = (Button) findViewById(R.id.button_TEST1);
+        button_TEST1.setOnClickListener(onClickListener);
 
         if (!CastizerConfig.CASTIZER_DEBUG) {
             //button01.setVisibility(View.INVISIBLE);
@@ -357,6 +361,15 @@ public class FullscreenActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
     private OnClickListener onClickListener = new OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -415,6 +428,27 @@ public class FullscreenActivity extends Activity {
                 case R.id.button_06:
                     System.exit(0);
                     break;
+
+                case R.id.button_TEST1:
+
+                    if (isExternalStorageReadable())
+                        Toast.makeText(FullscreenActivity.this, "SD Readable !", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(FullscreenActivity.this, "SD NOT READABLE !", Toast.LENGTH_SHORT).show();
+
+                    //File dir = Environment.getExternalStorageDirectory();
+                    String path = Environment.getExternalStorageDirectory().toString() + "/castizer/6";
+                    Log.d("Files", "Path: " + path);
+                    File dir = new File(path);
+                    File[] mp3List = dir.listFiles();
+                    if (mp3List != null)
+                        for (int i=0; i<mp3List.length; ++i)
+                        {
+                            Log.e("FILE:", path + "/" + mp3List[i].getName());
+                        }
+
+                    break;
+
                 default:
                     Toast.makeText(FullscreenActivity.this,
                             "Button pressed !", Toast.LENGTH_SHORT).show();
