@@ -34,6 +34,10 @@ import android.widget.Toast;
 import android.view.View.OnClickListener;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -85,6 +89,25 @@ public class FullscreenActivity extends Activity {
     private AudioManager audioManager;
 
     private int color_index = 0;
+    private boolean isPlaying = false;
+    private int currentSongIndex = 0;
+
+    private List<File> songsList;
+
+    private List<File> getListFiles(File parentDir) {
+        ArrayList<File> inFiles = new ArrayList<File>();
+        File[] files = parentDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                inFiles.addAll(getListFiles(file));
+            } else {
+                if(file.getName().endsWith(".mp3") || file.getName().endsWith(".wav")){
+                    inFiles.add(file);
+                }
+            }
+        }
+        return inFiles;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +219,39 @@ public class FullscreenActivity extends Activity {
             }
         };
 
+        mPlayer =   new MediaPlayer();
+
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+
+                boolean isRepeat = false;
+                boolean isShuffle = true;
+
+                if (!isPlaying()) return;
+
+                // check for repeat is ON or OFF
+                if(isRepeat){
+                    // repeat is on play same song again
+                    playSong(currentSongIndex);
+                } else if(isShuffle){
+                    // shuffle is on - play a random song
+                    Random rand = new Random();
+                    currentSongIndex = rand.nextInt((songsList.size() - 1) - 0 + 1) + 0;
+                    playSong(currentSongIndex);
+                } else{
+                    // no repeat or shuffle ON - play next song
+                    if(currentSongIndex < (songsList.size() - 1)){
+                        playSong(currentSongIndex + 1);
+                        currentSongIndex = currentSongIndex + 1;
+                    }else{
+                        // play first song
+                        playSong(0);
+                        currentSongIndex = 0;
+                    }
+                }
+
+            }
+        });
 
     }
 
@@ -245,6 +301,10 @@ public class FullscreenActivity extends Activity {
 
     }
 
+    private boolean isPlaying(){
+        return (isPlaying);
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -260,6 +320,53 @@ public class FullscreenActivity extends Activity {
             isReceiverRegistered = false;
         }
         */
+    }
+
+    /**
+     * Function to play a song
+     * @param songIndex - index of song
+     * */
+    public void  playSong(int songIndex){
+
+        // Play song
+        try {
+            mPlayer.reset();
+            String songToPlayPath = songsList.get(songIndex).getAbsolutePath();
+            Log.e("FILE TO PLAY:", songToPlayPath);
+            mPlayer.setDataSource(songToPlayPath);
+            mPlayer.prepare();
+            mPlayer.start();
+            // Displaying Song title
+            //String songTitle = songsList.get(songIndex).get("songTitle");
+            //songTitleLabel.setText(songTitle);
+
+            // Changing Button Image to pause image
+            //buttonState.setText("PLAYING");
+            Log.d(TAG, "Playing !");
+            isPlaying = true;
+
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void play() {
+
+        // check if next song is there or not
+        if(currentSongIndex < (songsList.size() - 1)){
+            playSong(currentSongIndex + 1);
+            currentSongIndex = currentSongIndex + 1;
+        }else{
+            // play first song
+            playSong(0);
+            currentSongIndex = 0;
+        }
+
     }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -438,6 +545,7 @@ public class FullscreenActivity extends Activity {
 
                     //File dir = Environment.getExternalStorageDirectory();
                     String path = Environment.getExternalStorageDirectory().toString() + "/castizer/6";
+                    /*
                     Log.d("Files", "Path: " + path);
                     File dir = new File(path);
                     File[] mp3List = dir.listFiles();
@@ -446,6 +554,50 @@ public class FullscreenActivity extends Activity {
                         {
                             Log.e("FILE:", path + "/" + mp3List[i].getName());
                         }
+                    */
+
+                    Log.d(TAG, "START");
+                    //File dirTest = new File("/storage/sdcard1/castizer/test");
+                    File dirTest = new File(path);
+                    songsList = getListFiles(dirTest);
+
+                    if (songsList != null)
+                        for (int i=0; i<songsList.size(); ++i)
+                        {
+                            Log.e("FILE2:", songsList.get(i).getAbsolutePath());
+                        }
+
+                    play();
+
+/*                    //Uri myUri1 = Uri.parse("file:///storage/sdcard1/anna");
+                    String filepath = "file:///storage/sdcard0/castizer/6";
+                    Uri myUri1 = Uri.parse(filepath);
+                    Log.d("DEBUGGG", "Path: " + filepath);
+
+                    mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
+                    mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    try {
+                        mPlayer.setDataSource(getApplicationContext(), myUri1);
+                        /*
+                    } catch (IllegalArgumentException e) {
+                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                    } catch (SecurityException e) {
+                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                    } catch (IllegalStateException e) {
+                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                    }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        mPlayer.prepare();
+                    } catch (IllegalStateException e) {
+                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                    }
+                    mPlayer.start();
+*/
 
                     break;
 
