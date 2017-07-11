@@ -69,7 +69,8 @@ public class FullscreenActivity extends Activity {
      */
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
-    private static final String TAG = "PPP com.castizer";
+    private static final String TAG = "PPP.com.castizer";
+    //private static final String TAG = "PPP com.castizer";
     private boolean isReceiverRegistered = false;
 
     /**
@@ -91,6 +92,7 @@ public class FullscreenActivity extends Activity {
     private int color_index = 0;
     private boolean isPlaying = false;
     private int currentSongIndex = 0;
+    private int playlist = 0;
 
     private List<File> songsList;
 
@@ -149,7 +151,7 @@ public class FullscreenActivity extends Activity {
 //        button03.setOnClickListener(onClickListener);
         Button button04 = (Button) findViewById(R.id.button_04);
         button04.setOnClickListener(onClickListener);
-        Button button05 = (Button) findViewById(R.id.button_05);
+        Button button05 = (Button) findViewById(R.id.button_action);
         button05.setOnClickListener(onClickListener);
         Button button06 = (Button) findViewById(R.id.button_06);
         button06.setOnClickListener(onClickListener);
@@ -163,6 +165,12 @@ public class FullscreenActivity extends Activity {
             button04.setVisibility(View.INVISIBLE);
             button05.setVisibility(View.INVISIBLE);
             button06.setVisibility(View.INVISIBLE);
+        }
+
+        if (isExternalStorageReadable())
+            Toast.makeText(FullscreenActivity.this, "SD Readable !", Toast.LENGTH_SHORT).show();
+        else {
+            Toast.makeText(FullscreenActivity.this, "SD NOT READABLE !", Toast.LENGTH_SHORT).show();
         }
 
         /*
@@ -521,43 +529,24 @@ public class FullscreenActivity extends Activity {
 
                     break;
 
-                case R.id.button_05:
+                case R.id.button_action:
 
-                    int pl = castizerPlayer.nextPlaylist();
-                    Toast.makeText(FullscreenActivity.this, "playlist: " + pl, Toast.LENGTH_LONG).show();
-                    mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
+                    playlist = castizerPlayer.nextPlaylist();
+                    Toast.makeText(FullscreenActivity.this, "playlist: " + playlist, Toast.LENGTH_LONG).show();
+                    mPlayer.reset();
+                    try {
+                        mPlayer.setDataSource(getApplicationContext(), Uri.parse("android.resource://com.castizer/" + R.raw.sonar));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     mPlayer.start();
 
-                    Button buttonMain = (Button) findViewById(R.id.button_05);
-                    buttonMain.setBackgroundColor(CastizerConfig.color[pl]);
-
-                    break;
-                case R.id.button_06:
-                    System.exit(0);
-                    break;
-
-                case R.id.button_TEST1:
-
-                    if (isExternalStorageReadable())
-                        Toast.makeText(FullscreenActivity.this, "SD Readable !", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(FullscreenActivity.this, "SD NOT READABLE !", Toast.LENGTH_SHORT).show();
+                    Button buttonMain = (Button) findViewById(R.id.button_action);
+                    buttonMain.setBackgroundColor(CastizerConfig.color[playlist]);
 
                     //File dir = Environment.getExternalStorageDirectory();
-                    String path = Environment.getExternalStorageDirectory().toString() + "/castizer/6";
-                    /*
-                    Log.d("Files", "Path: " + path);
-                    File dir = new File(path);
-                    File[] mp3List = dir.listFiles();
-                    if (mp3List != null)
-                        for (int i=0; i<mp3List.length; ++i)
-                        {
-                            Log.e("FILE:", path + "/" + mp3List[i].getName());
-                        }
-                    */
-
+                    String path = Environment.getExternalStorageDirectory().toString() + "/castizer/" + playlist;
                     Log.d(TAG, "START");
-                    //File dirTest = new File("/storage/sdcard1/castizer/test");
                     File dirTest = new File(path);
                     songsList = getListFiles(dirTest);
 
@@ -569,35 +558,13 @@ public class FullscreenActivity extends Activity {
 
                     play();
 
-/*                    //Uri myUri1 = Uri.parse("file:///storage/sdcard1/anna");
-                    String filepath = "file:///storage/sdcard0/castizer/6";
-                    Uri myUri1 = Uri.parse(filepath);
-                    Log.d("DEBUGGG", "Path: " + filepath);
+                    break;
+                case R.id.button_06:
+                    System.exit(0);
+                    break;
 
-                    mPlayer = MediaPlayer.create(FullscreenActivity.this, R.raw.sonar);
-                    mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    try {
-                        mPlayer.setDataSource(getApplicationContext(), myUri1);
-                        /*
-                    } catch (IllegalArgumentException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (SecurityException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IllegalStateException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        mPlayer.prepare();
-                    } catch (IllegalStateException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                    }
-                    mPlayer.start();
-*/
+                case R.id.button_TEST1:
+
 
                     break;
 
