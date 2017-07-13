@@ -6,7 +6,9 @@ import com.castizer.Configuration;
 
 import android.app.Activity;
 import android.app.SearchManager;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothProfile;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -30,6 +32,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
 
@@ -38,6 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -94,6 +98,14 @@ public class FullscreenActivity extends Activity {
     private int currentSongIndex = 0;
     private int playlist = 0;
 
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothDevice mmDevice;
+    private String address = "90:F1:AA:E5:9A:27";
+    private Set<BluetoothDevice> pairedDevices;
+    private Set<BluetoothDevice> connectedDevices;
+
+    private Button button_action;
+
     private List<File> songsList;
 
     private List<File> getListFiles(File parentDir) {
@@ -143,28 +155,44 @@ public class FullscreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.button_01).setOnTouchListener(mDelayHideTouchListener);
-//        Button button01 = (Button) findViewById(R.id.button_01);
-//        button01.setOnClickListener(onClickListener);
-//        Button button02 = (Button) findViewById(R.id.button_02);
-//        button02.setOnClickListener(onClickListener);
-//        Button button03 = (Button) findViewById(R.id.button_03);
-//        button03.setOnClickListener(onClickListener);
+        Button button_TEST = (Button) findViewById(R.id.button_TEST);
+        button_TEST.setOnClickListener(onClickListener);
+        Button button_DEBUG = (Button) findViewById(R.id.button_DEBUG);
+        button_DEBUG.setOnClickListener(onClickListener);
+        Button button_EXIT = (Button) findViewById(R.id.button_EXIT);
+        button_EXIT.setOnClickListener(onClickListener);
+
+        button_action = (Button) findViewById(R.id.button_action);
+        button_action.setOnClickListener(onClickListener);
+
+        /*
         Button button04 = (Button) findViewById(R.id.button_04);
         button04.setOnClickListener(onClickListener);
         Button button05 = (Button) findViewById(R.id.button_action);
         button05.setOnClickListener(onClickListener);
         Button button06 = (Button) findViewById(R.id.button_06);
         button06.setOnClickListener(onClickListener);
-        Button button_TEST1 = (Button) findViewById(R.id.button_TEST1);
-        button_TEST1.setOnClickListener(onClickListener);
+         */
+        Button button_LEFT = (Button) findViewById(R.id.button_LEFT);
+        button_LEFT.setOnClickListener(onClickListener);
+        Button button_MIDDLE = (Button) findViewById(R.id.button_MIDDLE);
+        button_MIDDLE.setOnClickListener(onClickListener);
+        Button button_RIGHT = (Button) findViewById(R.id.button_RIGHT);
+        button_RIGHT.setOnClickListener(onClickListener);
 
         if (!CastizerConfig.CASTIZER_DEBUG) {
-            //button01.setVisibility(View.INVISIBLE);
-            //button02.setVisibility(View.INVISIBLE);
-            //button03.setVisibility(View.INVISIBLE);
-            button04.setVisibility(View.INVISIBLE);
-            button05.setVisibility(View.INVISIBLE);
-            button06.setVisibility(View.INVISIBLE);
+
+            LinearLayout linearLayoutButtons;
+            linearLayoutButtons = (LinearLayout) findViewById(R.id.IDLinearLayoutButtons);
+            linearLayoutButtons.setVisibility(View.GONE);
+/*
+            button_TEST.setVisibility(View.INVISIBLE);
+            button_DEBUG.setVisibility(View.INVISIBLE);
+            button_EXIT.setVisibility(View.INVISIBLE);
+            button_LEFT.setVisibility(View.INVISIBLE);
+            button_MIDDLE.setVisibility(View.INVISIBLE);
+            button_RIGHT.setVisibility(View.INVISIBLE);
+  */
         }
 
         if (isExternalStorageReadable())
@@ -313,6 +341,17 @@ public class FullscreenActivity extends Activity {
         return (isPlaying);
     }
 
+    public void switchOn() {
+/*
+        Log.d(TAG, "switchOn()");
+        if (playlist_number == 0){
+            nextPlaylist();
+        } else {
+            play();
+        }
+  */
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -377,6 +416,17 @@ public class FullscreenActivity extends Activity {
 
     }
 
+    public void pause() {
+
+        if(mPlayer.isPlaying()){
+            isPlaying = false;
+            mPlayer.pause();
+            Log.i(TAG, "pause(): mPlayer was playing... now paused!");
+        } else {
+            Log.i(TAG, "pause(): mPlayer was not playing!");
+        }
+    }
+
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -387,7 +437,9 @@ public class FullscreenActivity extends Activity {
 
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
                 Log.i(TAG, "ACTION_AUDIO_BECOMING_NOISY");
-                castizerPlayer.switchOff();
+                //castizerPlayer.switchOff();
+                Toast.makeText(context, "BLUETOOTH OFF !", Toast.LENGTH_LONG).show();
+                pause();
             }
 
             if (AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED.equals(action)) {
@@ -498,9 +550,36 @@ public class FullscreenActivity extends Activity {
                     mPlayer.start();
                     break;
                 */
-                //case R.id.button_01:
-                  //  castizerPlayer.nextPlaylist();
-                    //break;
+
+                case R.id.button_action:
+                    playlist = castizerPlayer.nextPlaylist();
+                    Toast.makeText(FullscreenActivity.this, "playlist: " + playlist, Toast.LENGTH_LONG).show();
+                    mPlayer.reset();
+                    try {
+                        mPlayer.setDataSource(getApplicationContext(), Uri.parse("android.resource://com.castizer/" + R.raw.sonar));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mPlayer.start();
+
+                    button_action.setBackgroundColor(CastizerConfig.color[playlist]);
+
+                    //File dir = Environment.getExternalStorageDirectory();
+                    String path = Environment.getExternalStorageDirectory().toString() + "/castizer/" + playlist;
+                    Log.d(TAG, "START");
+                    File dirTest = new File(path);
+                    songsList = getListFiles(dirTest);
+
+                    if (songsList != null)
+                        for (int i=0; i<songsList.size(); ++i)
+                        {
+                            Log.e("FILE2:", songsList.get(i).getAbsolutePath());
+                        }
+
+                    play();
+
+                    break;
+
                 //case R.id.button_02:
                   //  castizerPlayer.playPause();
                     //break;
@@ -520,7 +599,7 @@ public class FullscreenActivity extends Activity {
 
                     break;
  */
-                case R.id.button_04:
+                case R.id.button_TEST:
 
                     Toast.makeText(FullscreenActivity.this,
                             "Button !", Toast.LENGTH_SHORT).show();
@@ -529,8 +608,8 @@ public class FullscreenActivity extends Activity {
 
                     break;
 
-                case R.id.button_action:
-
+                case R.id.button_DEBUG:
+/*
                     playlist = castizerPlayer.nextPlaylist();
                     Toast.makeText(FullscreenActivity.this, "playlist: " + playlist, Toast.LENGTH_LONG).show();
                     mPlayer.reset();
@@ -541,7 +620,7 @@ public class FullscreenActivity extends Activity {
                     }
                     mPlayer.start();
 
-                    Button buttonMain = (Button) findViewById(R.id.button_action);
+                    Button buttonMain = (Button) findViewById(R.id.button02);
                     buttonMain.setBackgroundColor(CastizerConfig.color[playlist]);
 
                     //File dir = Environment.getExternalStorageDirectory();
@@ -559,19 +638,78 @@ public class FullscreenActivity extends Activity {
                     play();
 
                     break;
-                case R.id.button_06:
+  */
+                case R.id.button_EXIT:
                     System.exit(0);
                     break;
 
-                case R.id.button_TEST1:
+                case R.id.button_LEFT:
 
 
+                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                    if(mBluetoothAdapter == null)
+                    {
+                        Toast.makeText(getApplicationContext(), "No bluetooth adapter available", Toast.LENGTH_LONG).show();
+                        // myLabel.setText("No bluetooth adapter available");
+                    }
+
+                    if(!mBluetoothAdapter.isEnabled())
+                    {
+                        Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBluetooth, 0);
+                    }
+
+                    pairedDevices = mBluetoothAdapter.getBondedDevices();
+                    mmDevice = mBluetoothAdapter.getRemoteDevice(address);
+                    if (pairedDevices.contains(mmDevice))
+                    {
+                        //statusText.setText("Bluetooth Device Found, address: " + mmDevice.getAddress() );
+                        Log.d(TAG, "TEST1: BT is paired");
+                    }
+                    Toast.makeText(getApplicationContext(), "Bluetooth Device Found", Toast.LENGTH_LONG).show();
+                    //myLabel.setText("Bluetooth Device Found");
+
+                    break;
+
+                case R.id.button_MIDDLE:
+/*
+                    if (bluetooth.isEnabled()) {
+                        String toastText = bluetooth.getName() + " : " + bluetooth.getAddress();
+                        Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_LONG).show();
+                    }
+*/
+                break;
+
+                case R.id.button_RIGHT:
+
+                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                    pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+                    List<String> s = new ArrayList<String>();
+                    for(BluetoothDevice bt : pairedDevices){
+                        Log.d(TAG, "BT DEVICE: " + bt.getName().toString());
+                        Log.d(TAG, "   " + bt.getAddress().toString());
+                        Log.d(TAG, "   " + bt.getBondState());
+                    }
+
+                    /*
+                    btDevices = mBluetoothHeadset.getConnectedDevices();
+                    if ( btDevices.isEmpty() ) {
+                        returnNow = true;
+                        logMessage = "onHandleIntent/closeProfileProxy/No connected BT devices.";
+                    }
+                    else if ( mBluetoothHeadset.getConnectionState(btDevices.get(0)) != BluetoothProfile.STATE_CONNECTED)  {
+                        returnNow = true;
+                        logMessage = "onHandleIntent/closeProfileProxy/No connected headset.";
+                    }
+                    */
                     break;
 
                 default:
                     Toast.makeText(FullscreenActivity.this,
                             "Button pressed !", Toast.LENGTH_SHORT).show();
-                    break;
+                break;
+
                 }
 
         }

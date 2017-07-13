@@ -35,12 +35,12 @@
         <Button
             android:id="@+id/button_action"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:text="@string/button_05" />
+            android:layout_height="300dp"
+            android:text="Music !" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -81,8 +81,9 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/IDLinearLayoutButtons"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:baselineAligned="false"
             android:gravity="right"
             android:orientation="vertical">
@@ -96,25 +97,25 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/button_04"
+                    android:id="@+id/button_TEST"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/button_04" />
+                    android:text="TEST" />
 
                 <Button
-                    android:id="@+id/button_06"
+                    android:id="@+id/button_DEBUG"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/button_06" />
+                    android:text="DEBUG" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/button_EXIT"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/button_06" />
+                    android:text="EXIT" />
 
             </LinearLayout>
 
@@ -127,25 +128,25 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/button_TEST1"
+                    android:id="@+id/button_LEFT"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="TEST1" />
+                    android:text="LEFT" />
 
                 <Button
-                    android:id="@+id/button_06"
+                    android:id="@+id/button_MIDDLE"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/button_06" />
+                    android:text="MIDDLE" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/button_RIGHT"
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/button_06" />
+                    android:text="RIGHT" />
 
             </LinearLayout>
 
